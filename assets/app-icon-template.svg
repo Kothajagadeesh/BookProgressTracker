@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <!-- Purple Gradient Background -->
+  <defs>
+    <linearGradient id="purpleGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#8b5cf6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#a855f7;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background Rectangle -->
+  <rect width="1024" height="1024" fill="url(#purpleGradient)" />
+  
+  <!-- Book Icon (Centered) -->
+  <g transform="translate(512, 512)">
+    <!-- Open Book -->
+    <path 
+      d="M -200 -150 L -200 150 Q -200 180 -170 180 L -10 180 L -10 -120 Q -10 -150 -40 -150 Z" 
+      fill="white" 
+      opacity="0.95"
+    />
+    <path 
+      d="M 200 -150 L 200 150 Q 200 180 170 180 L 10 180 L 10 -120 Q 10 -150 40 -150 Z" 
+      fill="white" 
+      opacity="0.95"
+    />
+    
+    <!-- Book Spine -->
+    <rect 
+      x="-10" 
+      y="-150" 
+      width="20" 
+      height="330" 
+      fill="white" 
+      opacity="0.9"
+    />
+    
+    <!-- Page Lines (Left) -->
+    <line x1="-160" y1="-100" x2="-50" y2="-100" stroke="rgba(99, 102, 241, 0.3)" stroke-width="8"/>
+    <line x1="-160" y1="-50" x2="-50" y2="-50" stroke="rgba(99, 102, 241, 0.3)" stroke-width="8"/>
+    <line x1="-160" y1="0" x2="-50" y2="0" stroke="rgba(99, 102, 241, 0.3)" stroke-width="8"/>
+    <line x1="-160" y1="50" x2="-50" y2="50" stroke="rgba(99, 102, 241, 0.3)" stroke-width="8"/>
+    
+    <!-- Page Lines (Right) -->
+    <line x1="50" y1="-100" x2="160" y2="-100" stroke="rgba(99, 102, 241, 0.3)" stroke-width="8"/>
+    <line x1="50" y1="-50" x2="160" y2="-50" stroke="rgba(99, 102, 241, 0.3)" stroke-width="8"/>
+    <line x1="50" y1="0" x2="160" y2="0" stroke="rgba(99, 102, 241, 0.3)" stroke-width="8"/>
+    <line x1="50" y1="50" x2="160" y2="50" stroke="rgba(99, 102, 241, 0.3)" stroke-width="8"/>
+    
+    <!-- Bookmark -->
+    <path 
+      d="M -5 -150 L -5 100 L 0 90 L 5 100 L 5 -150 Z" 
+      fill="#fbbf24" 
+    />
+  </g>
+  
+  <!-- Optional: Add subtle shadow effect -->
+  <ellipse 
+    cx="512" 
+    cy="900" 
+    rx="300" 
+    ry="40" 
+    fill="black" 
+    opacity="0.1"
+  />
+</svg>
