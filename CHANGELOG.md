@@ -1,3 +1,20 @@
+## [Unreleased] - January 21, 2026
+
+### Added
+
+#### 9:15 PM IST - Firestore Integration for User Signup
+- **Feature**: Integrated Firestore to store user data upon signup.
+- **Implementation**:
+  - Modified `src/services/authService.ts` to include Firestore operations.
+  - When a new user signs up, a corresponding document is created in the `users` collection in Firestore.
+  - The user document stores `uid`, `name`, `username`, `email`, and a `createdAt` timestamp.
+  - Updated the `checkUsernameAvailability` function to query the `users` collection in Firestore, ensuring real-time username validation.
+  - Removed the old `AsyncStorage` logic for storing user information, making Firestore the single source of truth.
+- **Files Modified**:
+  - `src/services/authService.ts`
+  - `package.json` (to add `@react-native-firebase/firestore`)
+  - `package-lock.json`
+
 # Book Progress Tracker - Changelog
 
 ## [Unreleased] - January 6, 2026
