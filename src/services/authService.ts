@@ -1,79 +1,77 @@
 import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {getUserProfile} from '../storage/storage';
 
 export const checkUsernameAvailability = async (username: string): Promise<boolean> => {
   try {
-    // Get all registered usernames from AsyncStorage
-    const usernamesJson = await AsyncStorage.getItem('registeredUsernames');
-    const usernames: string[] = usernamesJson ? JSON.parse(usernamesJson) : [];
-    
-    // Check if username already exists (case-insensitive)
-    return !usernames.some(u => u.toLowerCase() === username.toLowerCase());
+    const snapshot = await firestore()
+      .collection('users')
+      .where('username', '==', username.toLowerCase())
+      .limit(1)
+      .get();
+
+    return snapshot.empty; // If snapshot is empty, username is available
   } catch (error) {
     console.error('Error checking username:', error);
-    return true; // Allow signup if check fails
+    // In case of an error, it's safer to prevent signup to avoid duplicates.
+    return false;
   }
 };
 
 export const checkEmailAvailability = async (email: string): Promise<boolean> => {
   try {
-    // Check if Firebase is initialized
     const app = auth().app;
     if (!app) {
       console.log('Firebase not initialized, skipping email check');
       return true;
     }
-    
-    // Firebase will check email uniqueness during signup
-    // This is just a pre-check using fetch sign-in methods
     const methods = await auth().fetchSignInMethodsForEmail(email);
-    return methods.length === 0; // Available if no methods found
+    return methods.length === 0;
   } catch (error) {
     console.error('Error checking email:', error);
-    return true; // Allow signup if check fails
+    return true; 
   }
 };
 
 export const signUp = async (email: string, password: string, name: string, username: string) => {
-  try {
-    // Check username availability
-    const usernameAvailable = await checkUsernameAvailability(username);
-    if (!usernameAvailable) {
-      throw new Error('Username already taken');
+    try {
+      // Create user with email and password
+      const userCredential = await auth().createUserWithEmailAndPassword(email, password);
+      const user = userCredential.user;
+  
+      // Update user profile with display name
+      await user.updateProfile({
+        displayName: name,
+      });
+  
+      // Create a user document in Firestore
+      await firestore().collection('users').doc(user.uid).set({
+        uid: user.uid,
+        name,
+        username: username.toLowerCase(),
+        email,
+        createdAt: firestore.FieldValue.serverTimestamp(),
+        profilePicture: null,
+        bio: '',
+      });
+  
+      await AsyncStorage.setItem('userEmail', email);
+  
+      return user;
+    } catch (error) {
+      console.error('Signup error:', error);
+      // If user creation succeeded but firestore failed, delete the auth user
+      if (error.code !== 'auth/email-already-in-use' && auth().currentUser) {
+         await auth().currentUser.delete();
+      }
+      throw error;
     }
-
-    // Create user with email and password
-    const userCredential = await auth().createUserWithEmailAndPassword(email, password);
-    
-    // Update user profile with display name
-    await userCredential.user.updateProfile({
-      displayName: name,
-    });
-
-    // Store user info locally
-    await AsyncStorage.setItem('userName', name);
-    await AsyncStorage.setItem('userEmail', email);
-    await AsyncStorage.setItem('username', username);
-    
-    // Add username to registered usernames list
-    const usernamesJson = await AsyncStorage.getItem('registeredUsernames');
-    const usernames: string[] = usernamesJson ? JSON.parse(usernamesJson) : [];
-    usernames.push(username);
-    await AsyncStorage.setItem('registeredUsernames', JSON.stringify(usernames));
-    
-    return userCredential.user;
-  } catch (error) {
-    console.error('Signup error:', error);
-    throw error;
-  }
-};
+  };
 
 export const signIn = async (email: string, password: string) => {
   try {
     const userCredential = await auth().signInWithEmailAndPassword(email, password);
     
-    // Store user info locally
     await AsyncStorage.setItem('userEmail', email);
     if (userCredential.user.displayName) {
       await AsyncStorage.setItem('userName', userCredential.user.displayName);
@@ -89,7 +87,6 @@ export const signIn = async (email: string, password: string) => {
 export const signOut = async () => {
   try {
     await auth().signOut();
-    // Clear local user data
     await AsyncStorage.removeItem('userEmail');
     await AsyncStorage.removeItem('userName');
   } catch (error) {
@@ -123,6 +120,10 @@ export const updateUserProfile = async (displayName: string) => {
         displayName,
       });
       await AsyncStorage.setItem('userName', displayName);
+      // Also update the name in Firestore
+      await firestore().collection('users').doc(user.uid).update({
+        name: displayName
+      });
     }
   } catch (error) {
     console.error('Update profile error:', error);
@@ -134,6 +135,9 @@ export const deleteAccount = async () => {
   try {
     const user = auth().currentUser;
     if (user) {
+      // Delete user document from Firestore
+      await firestore().collection('users').doc(user.uid).delete();
+      // Delete user from Auth
       await user.delete();
       await AsyncStorage.clear();
     }

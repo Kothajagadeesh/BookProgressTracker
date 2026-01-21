@@ -1,4 +1,4 @@
-# 📚 Book Progress Tracker
+wd# 📚 Book Progress Tracker
 
 A beautiful cross-platform mobile app for tracking your reading progress, setting reading goals, and earning badges for your reading achievements!
 
