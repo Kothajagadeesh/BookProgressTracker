@@ -45,49 +45,119 @@ A beautiful cross-platform mobile app for tracking your reading progress, settin
 ### Prerequisites
 - Node.js (v18 or higher)
 - npm or yarn
-- React Native development environment
-- For iOS: Xcode and CocoaPods
-- For Android: Android Studio and JDK
+- React Native CLI
+- For iOS: Xcode 15+, CocoaPods
+- For Android: Android Studio, JDK 17, Android SDK 34
 
 ### Installation
 
-1. **Install dependencies**:
+1. **Clone and install dependencies**:
 ```bash
+git clone <repository-url>
+cd BookProgressTracker
 npm install
-# or
-yarn install
 ```
 
-2. **Install iOS dependencies** (Mac only):
+2. **Firebase Setup** (Required for authentication):
+   - Create a Firebase project at [Firebase Console](https://console.firebase.google.com)
+   - Enable Email/Password authentication
+   - Enable Firestore database
+   
+   **For Android:**
+   - Download `google-services.json` from Firebase Console
+   - Place it in `android/app/google-services.json`
+   
+   **For iOS:**
+   - Download `GoogleService-Info.plist` from Firebase Console
+   - Place it in `ios/BookProgressTracker/GoogleService-Info.plist`
+
+---
+
+## 📱 Running on Android
+
+### Setup
+```bash
+# Ensure Android SDK 34 is installed
+# Start Android emulator or connect device
+
+# Check connected devices
+adb devices
+```
+
+### Launch App
+```bash
+# Start Metro bundler (Terminal 1)
+npx react-native start
+
+# Run on Android (Terminal 2)
+npx react-native run-android
+```
+
+### If Metro connection fails:
+```bash
+# Setup port forwarding
+adb reverse tcp:8081 tcp:8081
+
+# Or bundle JS into APK (works offline)
+mkdir -p android/app/src/main/assets
+npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res
+
+# Then run
+npx react-native run-android
+```
+
+---
+
+## 🍎 Running on iOS
+
+### Setup
 ```bash
 cd ios
+
+# Install CocoaPods dependencies (use Homebrew pod if system Ruby fails)
+/opt/homebrew/bin/pod install
+# or
 pod install
+
 cd ..
 ```
 
-3. **Run on Android**:
+### Launch App
 ```bash
-npm run android
-# or
-yarn android
+# Start Metro bundler (Terminal 1)
+npx react-native start
+
+# Run on iOS Simulator (Terminal 2)
+npx react-native run-ios
+
+# Run on specific simulator
+npx react-native run-ios --simulator="iPhone 15 Pro"
 ```
 
-4. **Run on iOS** (Mac only):
+### Troubleshooting iOS Build:
 ```bash
-npm run ios
-# or
-yarn ios
+# Clean build if needed
+cd ios
+rm -rf Pods Podfile.lock
+/opt/homebrew/bin/pod install
+cd ..
+
+# Clean Xcode derived data
+rm -rf ~/Library/Developer/Xcode/DerivedData
 ```
 
-## 📱 Platform-Specific Setup
+---
+
+## 📱 Platform Requirements
 
 ### Android
-- Minimum SDK: 21 (Android 5.0)
-- Target SDK: 33
-- Permissions: Notifications
+- Minimum SDK: 23 (Android 6.0)
+- Target SDK: 34
+- Compile SDK: 34
+- Permissions: Internet, Notifications
 
 ### iOS
-- Minimum iOS Version: 12.0
+- Minimum iOS Version: 15.0
 - Permissions: Notifications
 
 ## 🛠️ Tech Stack

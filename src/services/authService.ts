@@ -33,7 +33,7 @@ export const checkEmailAvailability = async (email: string): Promise<boolean> =>
   }
 };
 
-export const signUp = async (email: string, password: string, name: string, username: string) => {
+export const signUp = async (email: string, password: string, name: string, username?: string) => {
     try {
       // Create user with email and password
       const userCredential = await auth().createUserWithEmailAndPassword(email, password);
@@ -48,17 +48,15 @@ export const signUp = async (email: string, password: string, name: string, user
       await firestore().collection('users').doc(user.uid).set({
         uid: user.uid,
         name,
-        username: username.toLowerCase(),
+        username: username ? username.toLowerCase() : '',
         email,
         createdAt: firestore.FieldValue.serverTimestamp(),
         profilePicture: null,
         bio: '',
       });
   
-      await AsyncStorage.setItem('userEmail', email);
-  
       return user;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Signup error:', error);
       // If user creation succeeded but firestore failed, delete the auth user
       if (error.code !== 'auth/email-already-in-use' && auth().currentUser) {

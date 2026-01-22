@@ -17,7 +17,39 @@
 
 # Book Progress Tracker - Changelog
 
-## [Unreleased] - January 6, 2026
+## [Unreleased] - January 22, 2026
+
+### Added
+
+#### 10:30 PM IST - Firebase Integration & Platform Build Fixes
+- **Feature**: Fixed Firebase integration for both Android and iOS platforms
+- **Android Fixes**:
+  - Updated `compileSdkVersion` and `targetSdkVersion` to 34 in `android/build.gradle`
+  - Fixed React Native paths in `android/app/build.gradle` (changed `../node_modules` to `../../node_modules`)
+  - Created missing `rn_edit_text_material.xml` drawable resource
+  - Removed missing `ic_launcher_round` reference from `AndroidManifest.xml`
+  - Generated debug keystore for signing
+  - Updated `react-native-screens` to version 3.29.0 for compatibility
+  - Added vector icons font linking via `fonts.gradle`
+  - Bundled JS into APK for offline loading
+- **iOS Fixes**:
+  - Configured `Podfile` with `use_frameworks! :linkage => :static`
+  - Added `$RNFirebaseAsStaticFramework = true` for Firebase compatibility
+  - Set iOS deployment target to 15.0
+  - Added `use_modular_headers!` for Swift pod compatibility
+  - Successfully ran `pod install` with 81 pods installed
+- **Files Modified**:
+  - `android/build.gradle`
+  - `android/app/build.gradle`
+  - `android/app/src/main/AndroidManifest.xml`
+  - `android/app/src/main/res/drawable/rn_edit_text_material.xml` (created)
+  - `android/app/debug.keystore` (generated)
+  - `ios/Podfile`
+- **Status**: Android app running on emulator, iOS build in progress
+
+---
+
+## [Previous] - January 6, 2026
 
 ### Added
 
@@ -237,4 +269,4 @@
 
 ---
 
-*Last Updated: January 5, 2026, 9:12 PM IST*
+*Last Updated: January 22, 2026, 10:45 PM IST*

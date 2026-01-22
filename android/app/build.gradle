@@ -1,11 +1,13 @@
 apply plugin: "com.android.application"
 apply plugin: "com.facebook.react"
 
+apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle")
+
 react {
-    reactNativeDir = file("../node_modules/react-native")
-    hermesCommand = "../node_modules/react-native/sdks/hermes-engine/%OS-BIN%/hermesc"
-    codegenDir = file("../node_modules/@react-native/codegen")
-    cliFile = file("../node_modules/react-native/cli.js")
+    reactNativeDir = file("../../node_modules/react-native")
+    hermesCommand = "../../node_modules/react-native/sdks/hermes-engine/%OS-BIN%/hermesc"
+    codegenDir = file("../../node_modules/@react-native/codegen")
+    cliFile = file("../../node_modules/react-native/cli.js")
 }
 
 def enableProguardInReleaseBuilds = false

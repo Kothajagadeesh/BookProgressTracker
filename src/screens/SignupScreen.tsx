@@ -26,24 +26,24 @@ const SignupScreen = () => {
   const {theme: colors} = useTheme();
   
   const [name, setName] = useState('');
-  const [username, setUsername] = useState('');
+  // const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [checkingUsername, setCheckingUsername] = useState(false);
+  // const [checkingUsername, setCheckingUsername] = useState(false);
   const [checkingEmail, setCheckingEmail] = useState(false);
   
   const [nameError, setNameError] = useState('');
-  const [usernameError, setUsernameError] = useState('');
+  // const [usernameError, setUsernameError] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
   const [touched, setTouched] = useState({
     name: false,
-    username: false,
+    // username: false,
     email: false,
     password: false,
     confirmPassword: false,
@@ -69,38 +69,38 @@ const SignupScreen = () => {
     }
   };
 
-  const handleUsernameChange = async (text: string) => {
-    // Remove spaces and special characters, allow only alphanumeric and underscore
-    const cleanText = text.toLowerCase().replace(/[^a-z0-9_]/g, '');
-    setUsername(cleanText);
-    
-    if (!cleanText.trim()) {
-      setUsernameError('Username is required');
-      return;
-    }
-    
-    if (cleanText.length < 3) {
-      setUsernameError('Username must be at least 3 characters');
-      return;
-    }
-    
-    // Check username availability
-    setCheckingUsername(true);
-    setUsernameError('');
-    
-    try {
-      const isAvailable = await checkUsernameAvailability(cleanText);
-      if (!isAvailable) {
-        setUsernameError('Username is already taken');
-      } else {
-        setUsernameError('');
-      }
-    } catch (error) {
-      console.error('Error checking username:', error);
-    } finally {
-      setCheckingUsername(false);
-    }
-  };
+  // const handleUsernameChange = async (text: string) => {
+  //   // Remove spaces and special characters, allow only alphanumeric and underscore
+  //   const cleanText = text.toLowerCase().replace(/[^a-z0-9_]/g, '');
+  //   setUsername(cleanText);
+  //   
+  //   if (!cleanText.trim()) {
+  //     setUsernameError('Username is required');
+  //     return;
+  //   }
+  //   
+  //   if (cleanText.length < 3) {
+  //     setUsernameError('Username must be at least 3 characters');
+  //     return;
+  //   }
+  //   
+  //   // Check username availability
+  //   setCheckingUsername(true);
+  //   setUsernameError('');
+  //   
+  //   try {
+  //     const isAvailable = await checkUsernameAvailability(cleanText);
+  //     if (!isAvailable) {
+  //       setUsernameError('Username is already taken');
+  //     } else {
+  //       setUsernameError('');
+  //     }
+  //   } catch (error) {
+  //     console.error('Error checking username:', error);
+  //   } finally {
+  //     setCheckingUsername(false);
+  //   }
+  // };
 
   const handleEmailChange = async (text: string) => {
     setEmail(text);
@@ -115,24 +115,25 @@ const SignupScreen = () => {
       return;
     }
     
-    // Check email availability
-    if (touched.email) {
-      setCheckingEmail(true);
-      setEmailError('');
-      
-      try {
-        const isAvailable = await checkEmailAvailability(text);
-        if (!isAvailable) {
-          setEmailError('Email is already registered');
-        } else {
-          setEmailError('');
-        }
-      } catch (error) {
-        console.error('Error checking email:', error);
-      } finally {
-        setCheckingEmail(false);
-      }
-    }
+    // Check email availability - disabled until Firebase is configured
+    // if (touched.email) {
+    //   setCheckingEmail(true);
+    //   setEmailError('');
+    //   
+    //   try {
+    //     const isAvailable = await checkEmailAvailability(text);
+    //     if (!isAvailable) {
+    //       setEmailError('Email is already registered');
+    //     } else {
+    //       setEmailError('');
+    //     }
+    //   } catch (error) {
+    //     console.error('Error checking email:', error);
+    //   } finally {
+    //     setCheckingEmail(false);
+    //   }
+    // }
+    setEmailError('');
   };
 
   const handlePasswordChange = (text: string) => {
@@ -171,7 +172,7 @@ const SignupScreen = () => {
   const handleSignup = async () => {
     setTouched({
       name: true,
-      username: true,
+      // username: true,
       email: true,
       password: true,
       confirmPassword: true,
@@ -184,13 +185,13 @@ const SignupScreen = () => {
       hasError = true;
     }
 
-    if (!username.trim()) {
-      setUsernameError('Username is required');
-      hasError = true;
-    } else if (username.length < 3) {
-      setUsernameError('Username must be at least 3 characters');
-      hasError = true;
-    }
+    // if (!username.trim()) {
+    //   setUsernameError('Username is required');
+    //   hasError = true;
+    // } else if (username.length < 3) {
+    //   setUsernameError('Username must be at least 3 characters');
+    //   hasError = true;
+    // }
 
     if (!email.trim()) {
       setEmailError('Email is required');
@@ -223,7 +224,7 @@ const SignupScreen = () => {
     setLoading(true);
 
     try {
-      await signUp(email, password, name, username);
+      await signUp(email, password, name);
       Alert.alert(
         'Success',
         'Account created successfully! Please log in.',
@@ -291,8 +292,8 @@ const SignupScreen = () => {
             )}
           </View>
 
-          {/* Username Input */}
-          <View style={styles.inputContainer}>
+          {/* Username Input - Commented out for now */}
+          {/* <View style={styles.inputContainer}>
             <Text style={[styles.label, {color: colors.text}]}>Username</Text>
             <View style={[styles.inputWrapper, {backgroundColor: colors.background, borderColor: colors.border}]}>
               <Icon name="at-outline" size={20} color={colors.textTertiary} />
@@ -320,7 +321,7 @@ const SignupScreen = () => {
                 Lowercase letters, numbers, and underscores only
               </Text>
             )}
-          </View>
+          </View> */}
 
           {/* Email Input */}
           <View style={styles.inputContainer}>
