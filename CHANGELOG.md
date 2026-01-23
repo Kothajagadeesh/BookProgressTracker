@@ -1,3 +1,35 @@
+## [Unreleased] - January 23, 2026
+
+### Added
+
+#### 9:30 PM IST - Supabase Backend Migration with Edge Functions
+- **Feature**: Migrated from Firebase to Supabase with proper backend architecture
+- **Backend Changes**:
+  - Created Supabase Edge Functions for `signup` and `signin`
+  - Edge Functions validate data server-side before database operations
+  - Signup validates: email format, password (6+ chars), username (2-30 chars)
+  - Checks for duplicate email and username before insert
+  - Signin validates credentials server-side
+- **Frontend Changes**:
+  - Created `src/services/api.ts` - API service layer to call Edge Functions
+  - Updated `src/services/authService.ts` to use backend API instead of direct DB calls
+  - Removed Firebase initialization from iOS `AppDelegate.mm`
+  - Added `react-native-url-polyfill` for Supabase compatibility
+- **Architecture**:
+  - Before: `App → Direct Database Insert` (insecure)
+  - After: `App → API Service → Edge Functions → Validate → Database` (secure)
+- **Files Created**:
+  - `supabase/functions/signup/index.ts`
+  - `supabase/functions/signin/index.ts`
+  - `src/services/api.ts`
+- **Files Modified**:
+  - `src/services/authService.ts`
+  - `ios/BookProgressTracker/AppDelegate.mm`
+  - `index.js` (added URL polyfill)
+  - `.gitignore` (added supabase/.temp/)
+
+---
+
 ## [Unreleased] - January 21, 2026
 
 ### Added
@@ -269,4 +301,4 @@
 
 ---
 
-*Last Updated: January 22, 2026, 10:45 PM IST*
+*Last Updated: January 23, 2026, 9:40 PM IST*

@@ -102,3 +102,6 @@ ios/build/
 
 # Debug logs
 *.log
+
+# Supabase local config
+supabase/.temp/
