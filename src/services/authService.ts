@@ -1,6 +1,7 @@
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { supabaseDb } from './supabase';
 
 export const checkUsernameAvailability = async (username: string): Promise<boolean> => {
   try {
@@ -54,13 +55,27 @@ export const signUp = async (email: string, password: string, name: string, user
         profilePicture: null,
         bio: '',
       });
+
+      // Also save user to Supabase database
+      try {
+        await supabaseDb.createUser({
+          user_email: email,
+          username: username ? username.toLowerCase() : name,
+          password: password, // Note: In production, this should be hashed
+        });
+        console.log('User saved to Supabase successfully');
+      } catch (supabaseError) {
+        // Log but don't fail signup if Supabase insert fails
+        console.error('Failed to save user to Supabase:', supabaseError);
+      }
   
       return user;
     } catch (error: any) {
       console.error('Signup error:', error);
       // If user creation succeeded but firestore failed, delete the auth user
-      if (error.code !== 'auth/email-already-in-use' && auth().currentUser) {
-         await auth().currentUser.delete();
+      const currentUser = auth().currentUser;
+      if (error.code !== 'auth/email-already-in-use' && currentUser) {
+         await currentUser.delete();
       }
       throw error;
     }
