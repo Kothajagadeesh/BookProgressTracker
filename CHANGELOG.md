@@ -1,3 +1,31 @@
+## [Unreleased] - January 24, 2026
+
+### Added
+
+#### 7:00 PM IST - Auth Flow Fixes & Email Verification Setup
+- **Feature**: Fixed authentication flow and prepared email verification infrastructure
+- **Fixes**:
+  - Fixed navigation after successful login (now navigates to MainTabs)
+  - Fixed signup success message to indicate email verification
+  - Added debug logging for API calls (temporary for troubleshooting)
+- **Email Verification (Disabled for now)**:
+  - Created `verify-email` Edge Function to handle verification links
+  - Created `resend-verification` Edge Function for resending verification emails
+  - Added email verification check in signin (currently commented out)
+  - Integrated Resend API for sending emails (requires domain verification for production)
+- **Files Created**:
+  - `supabase/functions/verify-email/index.ts`
+  - `supabase/functions/resend-verification/index.ts`
+- **Files Modified**:
+  - `src/screens/LoginScreen.tsx` (added navigation after login)
+  - `src/screens/SignupScreen.tsx` (updated success message)
+  - `src/services/authService.ts` (added resendVerificationEmail function)
+  - `src/services/api.ts` (added resendVerification endpoint)
+  - `supabase/functions/signin/index.ts` (email check disabled)
+  - `supabase/functions/signup/index.ts` (email sending disabled)
+
+---
+
 ## [Unreleased] - January 23, 2026
 
 ### Added
