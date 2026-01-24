@@ -227,7 +227,7 @@ const SignupScreen = () => {
       await signUp(email, password, name);
       Alert.alert(
         'Success',
-        'Account created successfully! Please log in.',
+        'Account created! Please check your email to verify your account before logging in.',
         [
           {
             text: 'OK',

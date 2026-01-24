@@ -26,6 +26,7 @@ const apiCall = async <T>(
   body?: object
 ): Promise<ApiResponse<T>> => {
   try {
+    console.log(`API Call: ${endpoint}`, body);
     const response = await fetch(`${FUNCTIONS_URL}/${endpoint}`, {
       method,
       headers: {
@@ -37,13 +38,15 @@ const apiCall = async <T>(
     });
 
     const data = await response.json();
+    console.log(`API Response: ${endpoint}`, response.status, data);
 
     if (!response.ok) {
       return {
         success: false,
         errors: data.errors,
         message: data.message || 'Request failed',
-      };
+        code: data.code, // Include error code from backend
+      } as ApiResponse<T>;
     }
 
     return {
@@ -69,6 +72,11 @@ export const authApi = {
   // Sign in existing user
   signin: async (email: string, password: string): Promise<ApiResponse<UserData>> => {
     return apiCall<UserData>('signin', 'POST', { email, password });
+  },
+
+  // Resend verification email
+  resendVerification: async (email: string): Promise<ApiResponse<null>> => {
+    return apiCall<null>('resend-verification', 'POST', { email });
   },
 };
 

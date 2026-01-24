@@ -17,7 +17,7 @@ import {RootStackParamList} from '../navigation/AppNavigator';
 import Icon from 'react-native-vector-icons/Ionicons';
 import LinearGradient from 'react-native-linear-gradient';
 import {useTheme} from '../context/ThemeContext';
-import {signIn} from '../services/authService';
+import {signIn, resendVerificationEmail} from '../services/authService';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -95,12 +95,42 @@ const LoginScreen = () => {
 
     try {
       await signIn(email, password);
-      // Navigation will be handled by auth state listener
+      // Navigate to main app after successful login
+      setLoading(false);
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'MainTabs' }],
+      });
     } catch (error: any) {
+      setLoading(false);
+      
+      // Handle email not verified error
+      if (error.code === 'auth/email-not-verified') {
+        Alert.alert(
+          'Email Not Verified',
+          'Please verify your email before logging in. Check your inbox for the verification link.',
+          [
+            { text: 'Cancel', style: 'cancel' },
+            {
+              text: 'Resend Email',
+              onPress: async () => {
+                try {
+                  await resendVerificationEmail(email);
+                  Alert.alert('Email Sent', 'Verification email has been sent. Please check your inbox.');
+                } catch (resendError: any) {
+                  Alert.alert('Error', resendError.message || 'Failed to resend verification email.');
+                }
+              },
+            },
+          ]
+        );
+        return;
+      }
+      
       let errorMessage = 'Failed to log in. Please try again.';
       
-      if (error.code === 'auth/user-not-found') {
-        errorMessage = 'No account found with this email.';
+      if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credentials') {
+        errorMessage = 'Invalid email or password.';
       } else if (error.code === 'auth/wrong-password') {
         errorMessage = 'Incorrect password.';
       } else if (error.code === 'auth/invalid-email') {
@@ -110,7 +140,6 @@ const LoginScreen = () => {
       }
       
       Alert.alert('Login Failed', errorMessage);
-      setLoading(false);
     }
   };
 

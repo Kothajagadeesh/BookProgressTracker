@@ -17,6 +17,13 @@ interface ValidationError {
   message: string;
 }
 
+// Generate a random verification token
+const generateVerificationToken = (): string => {
+  const array = new Uint8Array(32);
+  crypto.getRandomValues(array);
+  return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+};
+
 // Validation functions
 const validateEmail = (email: string): boolean => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -101,7 +108,7 @@ serve(async (req) => {
       );
     }
 
-    // Insert user into database
+    // Insert user into database (email verification disabled)
     const { data: newUser, error: insertError } = await supabase
       .from('users')
       .insert([{
@@ -116,14 +123,16 @@ serve(async (req) => {
     if (insertError) {
       console.error('Insert error:', insertError);
       return new Response(
-        JSON.stringify({ success: false, message: 'Failed to create account' }),
+        JSON.stringify({ success: false, message: `Failed to create account: ${insertError.message}` }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
+    // Email verification disabled for now
     return new Response(
       JSON.stringify({ 
         success: true, 
+        message: 'Account created successfully!',
         user: {
           email: newUser.user_email,
           username: newUser.username,

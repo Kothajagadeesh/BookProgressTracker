@@ -32,7 +32,9 @@ export const checkEmailAvailability = async (email: string): Promise<boolean> =>
 export const signUp = async (email: string, password: string, name: string, username?: string) => {
   try {
     // Call backend API for signup (validates and inserts)
+    console.log('Calling signup API with:', { email, username: username || name });
     const response = await authApi.signup(email, password, username || name);
+    console.log('Signup API response:', JSON.stringify(response));
 
     if (!response.success) {
       // Handle validation errors from backend
@@ -70,6 +72,17 @@ export const signIn = async (email: string, password: string) => {
     const response = await authApi.signin(email, password);
 
     if (!response.success) {
+      // Check for email not verified error
+      const errorCode = (response as any).code;
+      console.log('SignIn response:', JSON.stringify(response)); // Debug log
+      
+      if (errorCode === 'email-not-verified') {
+        throw { 
+          code: 'auth/email-not-verified', 
+          message: response.message || 'Please verify your email before logging in.',
+          email: email,
+        };
+      }
       throw { code: 'auth/invalid-credentials', message: response.message || 'Invalid email or password' };
     }
 
@@ -89,6 +102,21 @@ export const signIn = async (email: string, password: string) => {
     if (!error.code?.startsWith('auth/')) {
       console.error('Login error:', error);
     }
+    throw error;
+  }
+};
+
+export const resendVerificationEmail = async (email: string) => {
+  try {
+    const response = await authApi.resendVerification(email);
+    
+    if (!response.success) {
+      throw { code: 'resend-failed', message: response.message || 'Failed to resend verification email' };
+    }
+    
+    return { success: true, message: response.message };
+  } catch (error: any) {
+    console.error('Resend verification error:', error);
     throw error;
   }
 };

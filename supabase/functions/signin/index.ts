@@ -36,7 +36,7 @@ serve(async (req) => {
     // Get user from database
     const { data: user, error } = await supabase
       .from('users')
-      .select('user_email, username, password, created_at')
+      .select('user_email, username, password, created_at, email_verified')
       .eq('user_email', email.toLowerCase())
       .single();
 
@@ -54,6 +54,18 @@ serve(async (req) => {
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    // Check if email is verified (disabled for now)
+    // if (!user.email_verified) {
+    //   return new Response(
+    //     JSON.stringify({ 
+    //       success: false, 
+    //       code: 'email-not-verified',
+    //       message: 'Please verify your email before logging in. Check your inbox for the verification link.',
+    //     }),
+    //     { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    //   );
+    // }
 
     // Return user data (without password)
     return new Response(
