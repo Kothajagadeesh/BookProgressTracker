@@ -1,3 +1,25 @@
+## [Unreleased] - January 25, 2026
+
+### Added
+
+#### 9:50 PM IST - Database Schema for Book Tracking
+- **Feature**: Created complete database schema for book tracking functionality
+- **Tables Created**:
+  - `books` - Cache book data from Google Books API (id, google_books_id, isbn, title, description, thumbnail, page_count, published_date, categories)
+  - `authors` - Author information (id, google_author_id, name, bio, image_url)
+  - `book_authors` - Junction table for many-to-many book-author relationship (book_id, author_id, role)
+  - `user_books` - Track user reading progress (user_id, book_id, status, current_page, start_date, finish_date)
+  - `reviews` - Public ratings and comments (user_id, book_id, rating, review_text)
+- **Schema Design**:
+  - Many-to-many relationship between books and authors
+  - Supports multiple authors per book with roles (author, illustrator, etc.)
+  - Separate tables for private progress (user_books) and public reviews (reviews)
+  - Added `id` column to `users` table for foreign key support
+- **Files Created**:
+  - `supabase/migrations/002_create_book_tables.sql`
+
+---
+
 ## [Unreleased] - January 24, 2026
 
 ### Added

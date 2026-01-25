@@ -139,6 +139,7 @@ const MainNavigator = () => {
             fontWeight: 'bold',
           },
           headerShadowVisible: true,
+          headerBackTitleVisible: false,
         }}>
         <Stack.Screen
           name="Login"
