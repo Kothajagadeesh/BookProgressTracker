@@ -80,4 +80,72 @@ export const authApi = {
   },
 };
 
+// Books API endpoints
+export const booksApi = {
+  // Add book to user's reading list
+  addUserBook: async (
+    userEmail: string,
+    book: any,
+    status: 'reading' | 'completed' | 'want-to-read',
+    currentPage?: number,
+    startDate?: string,
+    finishDate?: string
+  ): Promise<ApiResponse<{ bookId: string }>> => {
+    return apiCall<{ bookId: string }>('add-user-book', 'POST', {
+      userEmail,
+      book,
+      status,
+      currentPage,
+      startDate,
+      finishDate,
+    });
+  },
+
+  // Add or update a review
+  addReview: async (
+    userEmail: string,
+    googleBooksId: string,
+    rating: number,
+    reviewText?: string
+  ): Promise<ApiResponse<{ reviewId: string }>> => {
+    return apiCall<{ reviewId: string }>('add-review', 'POST', {
+      userEmail,
+      googleBooksId,
+      rating,
+      reviewText,
+    });
+  },
+
+  // Get reviews for a book
+  getReviews: async (googleBooksId: string): Promise<ApiResponse<{
+    reviews: Array<{
+      id: string;
+      rating: number;
+      reviewText: string;
+      username: string;
+      createdAt: string;
+    }>;
+    averageRating: number | null;
+    totalReviews: number;
+  }>> => {
+    try {
+      const response = await fetch(
+        `${SUPABASE_URL}/functions/v1/get-reviews?googleBooksId=${encodeURIComponent(googleBooksId)}`,
+        {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+            'apikey': SUPABASE_ANON_KEY,
+          },
+        }
+      );
+      const data = await response.json();
+      return { success: data.success, data };
+    } catch (error) {
+      console.error('Error fetching reviews:', error);
+      return { success: false, message: 'Failed to fetch reviews' };
+    }
+  },
+};
+
 export default authApi;

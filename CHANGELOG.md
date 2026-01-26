@@ -1,3 +1,44 @@
+## [Unreleased] - January 26, 2026
+
+### Added
+
+#### 9:40 PM IST - Book Sync & Reviews API Implementation
+- **Feature**: Complete backend API for book tracking and reviews
+- **Edge Functions Created**:
+  - `add-user-book` - Syncs books to database when user adds to reading list
+  - `add-review` - Add/update book reviews (requires book in reading list)
+  - `get-reviews` - Fetch reviews for a book with average rating
+- **Frontend API Integration**:
+  - Added `booksApi.addUserBook()` - Sync book to database
+  - Added `booksApi.addReview()` - Submit book review
+  - Added `booksApi.getReviews()` - Get reviews for a book
+- **Storage Sync**:
+  - Updated `saveUserBook()` to auto-sync with Supabase database
+  - Books now saved to both local storage and cloud database
+- **Business Logic**:
+  - Users can only review books in their reading list
+- **Files Created**:
+  - `supabase/functions/add-user-book/index.ts`
+  - `supabase/functions/add-review/index.ts`
+  - `supabase/functions/get-reviews/index.ts`
+- **Files Modified**:
+  - `src/services/api.ts` (added booksApi)
+  - `src/storage/storage.ts` (added syncBookToDatabase)
+
+#### 10:45 PM IST - Logout Functionality
+- **Feature**: Added logout functionality to Settings screen
+- **Implementation**:
+  - Logout clears user session via `signOut()` from authService
+  - Clears all local cached data via `AsyncStorage.clear()`
+  - Resets navigation stack to Login screen (prevents back navigation)
+- **UI Updates**:
+  - Added styled logout button in Settings > Account section
+  - Centered icon and text layout
+- **Files Modified**:
+  - `src/screens/SettingsScreen.tsx`
+
+---
+
 ## [Unreleased] - January 25, 2026
 
 ### Added

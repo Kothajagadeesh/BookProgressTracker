@@ -15,6 +15,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/Ionicons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {useTheme} from '../context/ThemeContext';
+import {signOut} from '../services/authService';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -49,34 +50,21 @@ const SettingsScreen = () => {
     setThemeMode(newTheme);
   };
 
-  const handleLogout = () => {
-    Alert.alert(
-      'Log Out',
-      'Are you sure you want to log out?',
-      [
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-        {
-          text: 'Log Out',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              // Clear all local data
-              await AsyncStorage.clear();
-              // Navigate to Login screen
-              navigation.reset({
-                index: 0,
-                routes: [{name: 'Login'}],
-              });
-            } catch (error) {
-              Alert.alert('Error', 'Failed to log out. Please try again.');
-            }
-          },
-        },
-      ]
-    );
+  const handleLogout = async () => {
+    try {
+      // Sign out from auth service (clears user session)
+      await signOut();
+      // Clear all local cached data
+      await AsyncStorage.clear();
+      // Navigate to Login screen and reset navigation stack
+      navigation.reset({
+        index: 0,
+        routes: [{name: 'Login'}],
+      });
+    } catch (error) {
+      console.error('Logout error:', error);
+      Alert.alert('Error', 'Failed to log out. Please try again.');
+    }
   };
 
   const handleNotificationToggle = async (value: boolean) => {
@@ -227,11 +215,18 @@ const SettingsScreen = () => {
           <Text style={[styles.sectionTitle, {color: colors.text}]}>Account</Text>
         </View>
         
+        <Text style={[styles.sectionDescription, {color: colors.textSecondary}]}>
+          Manage your account settings
+        </Text>
+
         <TouchableOpacity
-          style={[styles.logoutButton, {backgroundColor: '#ef4444', borderColor: '#dc2626'}]}
-          onPress={handleLogout}>
-          <Icon name="log-out-outline" size={20} color="white" />
-          <Text style={styles.logoutButtonText}>Log Out</Text>
+          style={styles.logoutButton}
+          onPress={handleLogout}
+          activeOpacity={0.8}>
+          <View style={styles.logoutButtonContent}>
+            <Icon name="log-out-outline" size={20} color="#fff" />
+            <Text style={styles.logoutButtonText}>Log Out</Text>
+          </View>
         </TouchableOpacity>
       </View>
 
@@ -389,19 +384,32 @@ const styles = StyleSheet.create({
     color: '#1f2937',
   },
   logoutButton: {
+    backgroundColor: '#ef4444',
+    borderRadius: 16,
+    marginTop: 8,
+    shadowColor: '#ef4444',
+    shadowOffset: {width: 0, height: 4},
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  logoutButtonContent: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 16,
-    borderRadius: 12,
-    borderWidth: 1,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
     gap: 8,
-    marginTop: 8,
   },
   logoutButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 17,
+    fontWeight: '700',
     color: 'white',
+  },
+  logoutButtonSubtext: {
+    fontSize: 13,
+    color: 'rgba(255, 255, 255, 0.8)',
+    marginTop: 2,
   },
 });
 

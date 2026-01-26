@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {UserBook, UserProfile, Badge} from '../types';
+import {booksApi} from '../services/api';
 
 const KEYS = {
   USER_BOOKS: 'user_books',
@@ -99,6 +100,7 @@ export const saveUserBooks = async (books: UserBook[]): Promise<void> => {
  */
 export const saveUserBook = async (userBook: UserBook): Promise<void> => {
   try {
+    // Save to local storage first
     const books = await getUserBooks();
     const index = books.findIndex(b => b.bookId === userBook.bookId);
     
@@ -112,8 +114,41 @@ export const saveUserBook = async (userBook: UserBook): Promise<void> => {
     
     // Update profile stats
     await updateProfileStats();
+
+    // Sync with database (async, don't block UI)
+    syncBookToDatabase(userBook);
   } catch (error) {
     console.error('Error saving user book:', error);
+  }
+};
+
+/**
+ * Sync book to Supabase database
+ */
+const syncBookToDatabase = async (userBook: UserBook): Promise<void> => {
+  try {
+    const userEmail = await AsyncStorage.getItem('userEmail');
+    if (!userEmail) {
+      console.log('No user email found, skipping database sync');
+      return;
+    }
+
+    const response = await booksApi.addUserBook(
+      userEmail,
+      userBook.book,
+      userBook.status,
+      userBook.currentPage,
+      userBook.startDate,
+      userBook.completedDate
+    );
+
+    if (response.success) {
+      console.log('Book synced to database:', response.data?.bookId);
+    } else {
+      console.error('Failed to sync book to database:', response.message);
+    }
+  } catch (error) {
+    console.error('Error syncing book to database:', error);
   }
 };
 
